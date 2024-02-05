@@ -188,7 +188,7 @@ public class AutonomoVermelhoEsquerda extends LinearOpMode {
             //andar até passagem
             //Lado do Tatame = 584
 
-            //  IMPLEMENTAR LÓGICA DE MOVIMENTO PARA O LADO AZUL ESQUERDO
+            //  IMPLEMENTAR LÓGICA DE MOVIMENTO PARA O LADO VERMELHO ESQUERDO
 
             // robot.move("forward", 584);  // mover 1/4 do tatame
 
