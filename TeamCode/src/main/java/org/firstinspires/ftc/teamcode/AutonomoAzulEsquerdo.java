@@ -187,11 +187,9 @@ public class AutonomoAzulEsquerdo extends LinearOpMode {
             //andar até passagem
             //Lado do Tatame = 584
 
-            robot.move("forward", 584);  //mover 1/4 do tatame
-            robot.move("backward", 500);  //mover 1/4 do tatame
-            robot.move("right", TATAMI_SIDE_SIZE * 2);  //mover 1/4 do tatame
-//            robot.move("backward", 292);  //mover 1/4 do tatame
-//            robot.move("right", 292);  //mover 1/4 do tatame
+            //  IMPLEMENTAR LÓGICA DE MOVIMENTO PARA O LADO AZUL ESQUERDO
+
+            // robot.move("forward", 584);  // mover 1/4 do tatame
 
 
             while (opModeIsActive() && (motorEf.isBusy() && motorDt.isBusy() && motorDf.isBusy() && motorEt.isBusy())) {
@@ -201,12 +199,6 @@ public class AutonomoAzulEsquerdo extends LinearOpMode {
                 telemetry.addData("motorEt:", motorEt.getCurrentPosition());
                 telemetry.update();
             }
-
-//            motorEf.setPower(0);
-//            motorEt.setPower(0);
-//            motorDf.setPower(0);
-//            motorDt.setPower(0);
-//            sleep(1000);
         }
     }
 
