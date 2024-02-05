@@ -23,8 +23,8 @@ public class AutonomoVermelhoDireita extends LinearOpMode {
 
         public void moveForward(int distance) {
             setupMotor(this.motors[0], DcMotorSimple.Direction.REVERSE);  // motorEf
-            setupMotor(this.motors[1], DcMotorSimple.Direction.FORWARD);  // motorEt
-            setupMotor(this.motors[2], DcMotorSimple.Direction.REVERSE);  // motorDf
+            setupMotor(this.motors[1], DcMotorSimple.Direction.REVERSE);  // motorEt
+            setupMotor(this.motors[2], DcMotorSimple.Direction.FORWARD);  // motorDf
             setupMotor(this.motors[3], DcMotorSimple.Direction.FORWARD);  // motorDt
             motorMove(this.motors[0], distance);  // motorEf
             motorMove(this.motors[1], distance);  // motorEt
@@ -186,8 +186,8 @@ public class AutonomoVermelhoDireita extends LinearOpMode {
             TeamRobot robot = new TeamRobot(chassi, linear);
 
             //andar até passagem
-            robot.move("forward", TATAMI_SIDE_SIZE * (1/4));
-            robot.move("left",  TATAMI_SIDE_SIZE * 2);
+//            robot.move("forward", 292);
+//            robot.move("left",  TATAMI_SIDE_SIZE * 2);
 
 
 //            motorMove(motorEf, 2921);
@@ -196,15 +196,15 @@ public class AutonomoVermelhoDireita extends LinearOpMode {
 //            motorMove(motorDt, 50);
 
 
-            while (opModeIsActive() && motorEf.isBusy())  { // while (opModeIsActive() && (motorEf.isBusy() && motorDt.isBusy() && motorDf.isBusy() && motorEt.isBusy())) {
-//                telemetry.addData("motorDf:", motorDf.getCurrentPosition());
-//                telemetry.addData("motorDt:", motorDt.getCurrentPosition());
+            while (opModeIsActive() && (motorEf.isBusy() && motorDt.isBusy() && motorDf.isBusy() && motorEt.isBusy())) {
+                telemetry.addData("motorDf:", motorDf.getCurrentPosition());
+                telemetry.addData("motorDt:", motorDt.getCurrentPosition());
                 telemetry.addData("motorEf:", motorEf.getCurrentPosition());
-//                telemetry.addData("motorEt:", motorEt.getCurrentPosition());
-//                telemetry.update();
+                telemetry.addData("motorEt:", motorEt.getCurrentPosition());
+                telemetry.update();
             }
 
-            motorEf.setPower(0);
+//            motorEf.setPower(0);
 //            motorEt.setPower(0);
 //            motorDf.setPower(0);
 //            motorDt.setPower(0);
