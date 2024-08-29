@@ -4,10 +4,20 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.util.HashMap;
 
 
 @Autonomous(name="AutonomoVermelhoEsquerda" , group="Linear Opmode")
 public class AutonomoVermelhoEsquerda extends LinearOpMode {
+    static final double DRIVE_SPEED = 0.6;
+    static final double TIME_OUT = 15.0;
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor motorEf;
+    private DcMotor motorEt;
+    private DcMotor motorDf;
+    private DcMotor motorDt;
 
     class Linear {
         public Linear() {
@@ -17,59 +27,53 @@ public class AutonomoVermelhoEsquerda extends LinearOpMode {
 
     class Chassi {
         DcMotor[] motors;
+        private final HashMap<String, DcMotor.Direction> directionEnumMap = new HashMap<String, DcMotor.Direction>() {{
+            put("forward", DcMotor.Direction.FORWARD);
+            put("reverse", DcMotor.Direction.REVERSE);
+        }};
+
         public Chassi(DcMotor[] motors) {
             this.motors = motors;
         }
 
+        private void applyChassiMotorDirections(
+                int distance, String... directions) {
+            String directionKeys[] = directions;
+            for (int i = 0; i < this.motors.length; i++) {
+                DcMotor motor = this.motors[i];
+                DcMotor.Direction direction = this.directionEnumMap.get(directionKeys[i]);
+                setupMotor(motor, direction);
+            }
+            encoderDrive(DRIVE_SPEED, distance, TIME_OUT);
+        }
+
         public void moveForward(int distance) {
-            setupMotor(this.motors[0], DcMotorSimple.Direction.REVERSE);  // motorEf
-            setupMotor(this.motors[1], DcMotorSimple.Direction.FORWARD);  // motorEt
-            setupMotor(this.motors[2], DcMotorSimple.Direction.REVERSE);  // motorDf
-            setupMotor(this.motors[3], DcMotorSimple.Direction.FORWARD);  // motorDt
-            motorMove(this.motors[0], distance);  // motorEf
-            motorMove(this.motors[1], distance);  // motorEt
-            motorMove(this.motors[2], distance);  // motorDf
-            motorMove(this.motors[3], distance);  // motorDt
+            //                    {motorEf, motorDf, motorEt, motorDt}
+            String[] directions = {"reverse", "forward", "reverse", "forward"};
+            this.applyChassiMotorDirections(distance, directions[0], directions[1], directions[2], directions[3]);
         }
 
         public void moveBackward(int distance) {
-            setupMotor(this.motors[0], DcMotorSimple.Direction.FORWARD);  // motorEf
-            setupMotor(this.motors[1], DcMotorSimple.Direction.REVERSE);  // motorEt
-            setupMotor(this.motors[2], DcMotorSimple.Direction.FORWARD);  // motorDf
-            setupMotor(this.motors[3], DcMotorSimple.Direction.REVERSE);  // motorDt
-            motorMove(this.motors[0], distance);  // motorEf
-            motorMove(this.motors[1], distance);  // motorEt
-            motorMove(this.motors[2], distance);  // motorDf
-            motorMove(this.motors[3], distance);  // motorDt
+            String[] directions = {"forward", "reverse", "forward", "reverse"};
+            this.applyChassiMotorDirections(distance, directions[0], directions[1], directions[2], directions[3]);
         }
 
         public void moveLeft(int distance) {
-            setupMotor(this.motors[0], DcMotorSimple.Direction.REVERSE);  // motorEt
-            setupMotor(this.motors[1], DcMotorSimple.Direction.FORWARD);  // motorEf
-            setupMotor(this.motors[2], DcMotorSimple.Direction.FORWARD);  // motorDt
-            setupMotor(this.motors[3], DcMotorSimple.Direction.REVERSE);  // motorDf
-            motorMove(this.motors[0], distance);  // motorEf
-            motorMove(this.motors[1], distance);  // motorEt
-            motorMove(this.motors[2], distance);  // motorDf
-            motorMove(this.motors[3], distance);  // motorDt
+            //                    {motorEf, motorDf, motorEt, motorDt}
+            String[] directions = {"forward", "forward", "reverse", "reverse"};
+            this.applyChassiMotorDirections(distance, directions[0], directions[1], directions[2], directions[3]);
         }
 
         public void moveRight(int distance) {
-            setupMotor(this.motors[0], DcMotorSimple.Direction.FORWARD);  // motorEf
-            setupMotor(this.motors[1], DcMotorSimple.Direction.REVERSE);  // motorEt
-            setupMotor(this.motors[2], DcMotorSimple.Direction.REVERSE);  // motorDf
-            setupMotor(this.motors[3], DcMotorSimple.Direction.FORWARD);  // motorDt
-            motorMove(this.motors[0], distance);  // motorEf
-            motorMove(this.motors[1], distance);  // motorEt
-            motorMove(this.motors[2], distance);  // motorDf
-            motorMove(this.motors[3], distance);  // motorDt
+            String[] directions = {"reverse", "reverse", "forward", "forward"};
+            this.applyChassiMotorDirections(distance, directions[0], directions[1], directions[2], directions[3]);
         }
 
         public void turnLeft(int angle) {
-            setupMotor(this.motors[0], DcMotorSimple.Direction.FORWARD);  // motorEf
-            setupMotor(this.motors[1], DcMotorSimple.Direction.FORWARD);  // motorEt
-            setupMotor(this.motors[2], DcMotorSimple.Direction.FORWARD);  // motorDf
-            setupMotor(this.motors[3], DcMotorSimple.Direction.FORWARD);  // motorDt
+            setupMotor(this.motors[0], DcMotor.Direction.FORWARD);  // motorEf
+            setupMotor(this.motors[1], DcMotor.Direction.FORWARD);  // motorEt
+            setupMotor(this.motors[2], DcMotor.Direction.FORWARD);  // motorDf
+            setupMotor(this.motors[3], DcMotor.Direction.FORWARD);  // motorDt
             // Calcular quanto as rodas têm que se mover para que o Robô atinja certo ângulo
             motorMove(this.motors[0], angle);  // motorEf
             motorMove(this.motors[1], angle);  // motorEt
@@ -78,10 +82,10 @@ public class AutonomoVermelhoEsquerda extends LinearOpMode {
         }
 
         public void turnRight(int angle) {
-            setupMotor(this.motors[0], DcMotorSimple.Direction.REVERSE);  // motorEf
-            setupMotor(this.motors[1], DcMotorSimple.Direction.REVERSE);  // motorEt
-            setupMotor(this.motors[2], DcMotorSimple.Direction.REVERSE);  // motorDf
-            setupMotor(this.motors[3], DcMotorSimple.Direction.REVERSE);  // motorDt
+            setupMotor(this.motors[0], DcMotor.Direction.REVERSE);  // motorEf
+            setupMotor(this.motors[1], DcMotor.Direction.REVERSE);  // motorEt
+            setupMotor(this.motors[2], DcMotor.Direction.REVERSE);  // motorDf
+            setupMotor(this.motors[3], DcMotor.Direction.REVERSE);  // motorDt
             // Calcular quanto as rodas têm que se mover para que o Robô atinja certo ângulo
             motorMove(this.motors[0], angle);  // motorEf
             motorMove(this.motors[1], angle);  // motorEt
@@ -93,6 +97,7 @@ public class AutonomoVermelhoEsquerda extends LinearOpMode {
     class TeamRobot {
         Chassi chassi;
         Linear linear;
+
         public TeamRobot(Chassi chassi, Linear linear) {
             this.chassi = chassi;
             this.linear = linear;
@@ -132,25 +137,19 @@ public class AutonomoVermelhoEsquerda extends LinearOpMode {
         }
 
 
-
     }
 
+    static final double COUNTS_PER_MOTOR_REV = 28.0;
+    static final double DRIVE_GEAR_REDUCTION = 30.4;
+    static final double WHEEL_CIRCUMFERENCE_MM = 90.0 * 3.14;
+    static final double COUNTS_PER_WHEEL_REV = COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION;
+    static final double COUNTS_PER_MM = COUNTS_PER_WHEEL_REV / WHEEL_CIRCUMFERENCE_MM;
+    static final int TATAMI_SIDE_SIZE = 584;
 
-    private DcMotor motorEf = null;
-    private DcMotor motorEt = null;
-    private DcMotor motorDf = null;
-    private DcMotor motorDt = null;
-
-    static final double     COUNTS_PER_MOTOR_REV    = 28.0;
-    static final double     DRIVE_GEAR_REDUCTION    = 30.4;
-    static final double     WHEEL_CIRCUMFERENCE_MM  = 90.0 * 3.14;
-    static final double     COUNTS_PER_WHEEL_REV    = COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION;
-    static final double     COUNTS_PER_MM           = COUNTS_PER_WHEEL_REV / WHEEL_CIRCUMFERENCE_MM;
-    static final int     TATAMI_SIDE_SIZE           = 584;
     public static void setupMotor(DcMotor motor, DcMotor.Direction direction) {
         motor.setDirection(direction);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     private void motorMove(DcMotor motor, int distance) {
@@ -159,7 +158,7 @@ public class AutonomoVermelhoEsquerda extends LinearOpMode {
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor.setTargetPosition(target);
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motor.setPower(0.8);
+        motor.setPower(0.4);
     }
 
     @Override
@@ -172,12 +171,13 @@ public class AutonomoVermelhoEsquerda extends LinearOpMode {
         motorDf = hardwareMap.get(DcMotor.class, "df");  //PORTA 3 CONTROL HUB
         motorDt = hardwareMap.get(DcMotor.class, "dt");  //PORTA 0 CONTROL HUB
 
-        DcMotor tractionMotors[] = {motorEf, motorEt, motorDf, motorDt};
+        DcMotor tractionMotors[] = {motorEf, motorDf, motorEt, motorDt};
 
         telemetry.addData("Mode", "waiting for start");
         telemetry.update();
 
         waitForStart();
+        runtime.reset();
 
         if (opModeIsActive()) {
 
@@ -186,29 +186,87 @@ public class AutonomoVermelhoEsquerda extends LinearOpMode {
             TeamRobot robot = new TeamRobot(chassi, linear);
 
             //andar até passagem
-            robot.move("forward", TATAMI_SIDE_SIZE * (1/4));
-            robot.move("left",  TATAMI_SIDE_SIZE * 4);
+            //Lado do Tatame = 584
+
+            //  IMPLEMENTAR LÓGICA DE MOVIMENTO PARA O LADO VERMELHO ESQUERDO
+
+            // robot.move("forward", 584);  // mover 1/4 do tatame
 
 
-//            motorMove(motorEf, 2921);
-//            motorMove(motorEt, 50);
-//            motorMove(motorDf, 50);
-//            motorMove(motorDt, 50);
-
-
-            while (opModeIsActive() && motorEf.isBusy())  { // while (opModeIsActive() && (motorEf.isBusy() && motorDt.isBusy() && motorDf.isBusy() && motorEt.isBusy())) {
-//                telemetry.addData("motorDf:", motorDf.getCurrentPosition());
-//                telemetry.addData("motorDt:", motorDt.getCurrentPosition());
+            while (opModeIsActive() && (motorEf.isBusy() && motorDt.isBusy() && motorDf.isBusy() && motorEt.isBusy())) {
+                telemetry.addData("motorDf:", motorDf.getCurrentPosition());
+                telemetry.addData("motorDt:", motorDt.getCurrentPosition());
                 telemetry.addData("motorEf:", motorEf.getCurrentPosition());
-//                telemetry.addData("motorEt:", motorEt.getCurrentPosition());
-//                telemetry.update();
+                telemetry.addData("motorEt:", motorEt.getCurrentPosition());
+                telemetry.update();
+            }
+        }
+    }
+
+    public void encoderDrive(double speed,
+                             double distanceMm, //, double rightInches,
+                             double timeoutS) {
+
+        // Ensure that the OpMode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            int newLeftFrontTarget = motorEf.getCurrentPosition() + (int) (distanceMm * COUNTS_PER_MM);
+            int newLeftBackTarget = motorEt.getCurrentPosition() + (int) (distanceMm * COUNTS_PER_MM);
+            int newRightFrontTarget = motorDf.getCurrentPosition() + (int) (distanceMm * COUNTS_PER_MM);
+            int newRightBackTarget = motorDt.getCurrentPosition() + (int) (distanceMm * COUNTS_PER_MM);
+            motorEf.setTargetPosition(newLeftFrontTarget);
+            motorEt.setTargetPosition(newLeftBackTarget);
+            motorDf.setTargetPosition(newRightFrontTarget);
+            motorDt.setTargetPosition(newRightBackTarget);
+
+            // Turn On RUN_TO_POSITION
+            motorEf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorEt.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorDf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorDt.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            motorEf.setPower(Math.abs(speed));
+            motorEt.setPower(Math.abs(speed));
+            motorDf.setPower(Math.abs(speed));
+            motorDt.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (motorEf.isBusy() && motorEt.isBusy() && motorDf.isBusy() && motorDt.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Running to", " %7d :%7d", newLeftFrontTarget,
+                        newLeftBackTarget,
+                        newRightFrontTarget,
+                        newRightBackTarget);
+                telemetry.addData("Currently at", " at %7d :%7d",
+                        motorEf.getCurrentPosition(), motorEt.getCurrentPosition(),
+                        motorDf.getCurrentPosition(), motorDt.getCurrentPosition());
+                telemetry.update();
             }
 
+            // Stop all motion;
             motorEf.setPower(0);
-//            motorEt.setPower(0);
-//            motorDf.setPower(0);
-//            motorDt.setPower(0);
-            sleep(1000);
+            motorEt.setPower(0);
+            motorDf.setPower(0);
+            motorDt.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            motorEf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorEt.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorDf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorDt.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+//            sleep(250);   // optional pause after each move.
         }
     }
 }
